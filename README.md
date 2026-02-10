@@ -1,10 +1,34 @@
-# mcq-platform-api
-REST API for managing exam questions, user attempts, and answer evaluation using Spring Boot, JWT, and MySQL.
+# MCQ Platform API
 
-# Exam Preparation App
-A backend REST API to help students prepare for exams with quizzes, progress tracking, and authentication.
+A backend REST API for an online MCQ-based exam and practice platform.
+The system allows users to practice questions by subject, track sessions,
+submit answers, and view results.
 
-## Tech Stack
-- Java
-- Spring Boot
+This project is built with scalability, clean architecture,
+and real-world backend practices in mind.
+
+---
+
+## 🚀 Features (Planned)
+- User registration and authentication
+- Role-based authorization (Admin / User)
+- MCQ question management
+- Subject-wise and difficulty-wise practice
+- Question session tracking
+- Answer submission and evaluation
+- Result and performance analysis
+
+---
+
+## 🛠 Tech Stack
+- Java 21
+- Spring Boot 4.0.2
+- Spring Security
+- Spring Data JPA
 - MySQL
+- Maven
+- JWT / Session-based authentication (planned)
+
+
+
+
