@@ -3,6 +3,7 @@ package com.example.mcq_platform_api.entities;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Question {
+    @Id
     private String id;
     private String questionText;
     private String subject; 
