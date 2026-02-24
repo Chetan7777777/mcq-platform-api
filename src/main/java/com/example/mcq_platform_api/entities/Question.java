@@ -25,4 +25,5 @@ public class Question {
 
     @OneToMany(mappedBy = "question", cascade = jakarta.persistence.CascadeType.ALL)
     private List<Option> options; 
+    
 }

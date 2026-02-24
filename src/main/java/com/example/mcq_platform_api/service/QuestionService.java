@@ -11,15 +11,21 @@ import com.example.mcq_platform_api.repository.QuestionRepo;
 
 public class QuestionService {
     @Autowired
-    private QuestionRepo qustionRepo;
+    private QuestionRepo questionRepo;
     public Page<Question>getQuestionByTopic(String topic , int size) {
         Pageable pageable = PageRequest.of(0 , size);
-        return qustionRepo.findByTopic(topic , pageable);
+        return questionRepo.findByTopic(topic , pageable);
     }
 
     public Page<Question> getQuestionBySubject(String subject , int size) {
         Pageable pageable = PageRequest.of(0 , size);
-        return qustionRepo.findBySubject(subject , pageable);
+        return questionRepo.findBySubject(subject , pageable);
+    }
+    public Question saveQuestion(Question question){
+        if(question == null){
+            return null;
+        }
+        return questionRepo.save(question);
     }
 
 }
