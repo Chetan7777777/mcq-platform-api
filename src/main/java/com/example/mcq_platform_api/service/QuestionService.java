@@ -1,6 +1,8 @@
 package com.example.mcq_platform_api.service;
 
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,9 +24,7 @@ public class QuestionService {
         return questionRepo.findBySubject(subject , pageable);
     }
     public Question saveQuestion(Question question){
-        if(question == null){
-            return null;
-        }
+        Objects.requireNonNull(question , "Question must not be null");
         return questionRepo.save(question);
     }
 
