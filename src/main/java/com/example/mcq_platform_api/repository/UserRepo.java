@@ -8,4 +8,5 @@ import com.example.mcq_platform_api.entities.User;
 
 public interface UserRepo  extends JpaRepository<User, String>{
     Optional<User> findByUsername(String username);
+
 }
