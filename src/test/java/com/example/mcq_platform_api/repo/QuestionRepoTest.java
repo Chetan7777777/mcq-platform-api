@@ -75,7 +75,6 @@ public class QuestionRepoTest {
         PageRequest pageable = PageRequest.of(0, 2);
         Page<Question> result = questionRepo.findBySubjectAndTopic("Math", "Algebra", pageable);
 
-
         // Assert
         assertThat(result.getContent()).hasSize(2);
         assertThat(result.getContent().get(0).getSubject()).isEqualTo("Math");
