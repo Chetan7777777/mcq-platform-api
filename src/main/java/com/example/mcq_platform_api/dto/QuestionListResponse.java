@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class QuestionListResponse {
-    private int sessionId;
+    private String sessionId;
     private int total;
     private String subject;
     private String topic;

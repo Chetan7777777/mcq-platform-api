@@ -26,7 +26,7 @@ public class QuestionRepoTest {
     @Test
     void testSaveQuestion(){
         // Create a new questions with options
-        Question question = createQuestion("Q1", "Algebra", "Math");
+        Question question = createQuestion("Q1", "Algebra", "Math" );
         Question savedQuestion = questionRepo.save(question);
 
         Question found = questionRepo.findById(question.getId()).orElse(null);
@@ -34,6 +34,7 @@ public class QuestionRepoTest {
         // Assert that the question is saved correctly
         assertThat(savedQuestion.getId()).isEqualTo(question.getId());
         assertThat(found.getId()).isEqualTo(question.getId());
+        assertThat(found.getOptions()).hasSize(2);
     }
     @Test
     void testFindBySubject(){
@@ -86,6 +87,7 @@ public class QuestionRepoTest {
         question.setSubject(subject);
         question.setTopic(topic);
         question.setQuestionText("Sample question text");
+        question.setExplaination("Explaination");
         question.setOptions(List.of(new Option(UUID.randomUUID().toString(), "Option 1", true, question),
                                   new Option(UUID.randomUUID().toString(), "Option 2", false, question)
                                   ));

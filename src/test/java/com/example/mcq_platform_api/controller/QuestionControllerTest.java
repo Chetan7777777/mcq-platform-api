@@ -55,7 +55,7 @@ public class QuestionControllerTest {
         QuestionResponse q2 = createQuestionResponse(2);
         QuestionListResponse list = new QuestionListResponse();
         list.setQuestions(List.of(q1,q2));
-        list.setSessionId(34);
+        list.setSessionId("34");
         list.setSubject(subject);
         list.setTopic(topic);
         list.setTotal(2);
@@ -69,9 +69,9 @@ public class QuestionControllerTest {
         OptionResponse or1 = new OptionResponse();
         OptionResponse or2 = new OptionResponse();
         OptionResponse or3 = new OptionResponse();
-        or1.setId(1);
-        or2.setId(2);
-        or3.setId(3);
+        or1.setLabel('a');
+        or2.setLabel('b');
+        or3.setLabel('c');
         or1.setOptionText("option1");
         or2.setOptionText("option2");
         or3.setOptionText("option3");

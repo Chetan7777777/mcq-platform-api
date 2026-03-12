@@ -24,6 +24,9 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class QuestionServiceTest {
+
+    @Mock
+    private TempService tempService;
     @Mock
     private QuestionRepo questionRepo;
 
@@ -55,7 +58,7 @@ public class QuestionServiceTest {
             System.out.println(questionResponse.getNumber());
             System.out.println(questionResponse.getQuestionText());
             for (var option : questionResponse.getOptions()) {
-                System.out.println(option.getId() + " - " + option.getOptionText());
+                System.out.println(option.getLabel() + " - " + option.getOptionText());
             }
         }
     }
