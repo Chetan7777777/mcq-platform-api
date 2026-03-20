@@ -28,7 +28,7 @@ public class AnswerCacheService {
     }
 
     public AnswerResponse getAnswer(String questionId) {
-        if(!answerCache.containsKey(questionId)) throw new ResourceNotFoundException("Question not found");
+        if(!answerCache.containsKey(questionId)) return null;
         return answerCache.get(questionId);
     }
 

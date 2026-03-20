@@ -1,7 +1,6 @@
 package com.example.mcq_platform_api.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,17 +8,26 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.mcq_platform_api.appconstants.Constant;
+import com.example.mcq_platform_api.dto.AnswerResponse;
 import com.example.mcq_platform_api.dto.QuestionListResponse;
 import com.example.mcq_platform_api.dto.QuestionResponse;
+import com.example.mcq_platform_api.dto.TempSessionResponse;
+import com.example.mcq_platform_api.exception.ResourceNotFoundException;
+import com.example.mcq_platform_api.service.AnswerCacheService;
 import com.example.mcq_platform_api.service.QuestionService;
+import com.example.mcq_platform_api.service.TempService;
 
 
 @Controller
 public class QuestionController {
     @Autowired
     private QuestionService questionService;
+    @Autowired
+    private AnswerCacheService answerCacheService;
+    @Autowired 
+    private TempService tempService;
    
-    @GetMapping("/question")
+    @GetMapping("/questions")
     public ResponseEntity<QuestionListResponse> getQuestions(@RequestParam(required = false) String subject ,
         @RequestParam(required = false) String topic , @RequestParam(defaultValue = Constant.DEFAULT_QUESTION_LIMIT) int limit) {
         if(subject != null){
@@ -33,9 +41,21 @@ public class QuestionController {
 
     }
     @GetMapping("/question/{id}")
-public ResponseEntity<QuestionResponse> getQuestion(@PathVariable String id) {
+    public ResponseEntity<QuestionResponse> getQuestion(@PathVariable String id) {
 
-    QuestionResponse response = questionService.getQuestionById(id);   
-    return ResponseEntity.ok(response);
-}
+        QuestionResponse response = questionService.getQuestionById(id);   
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/question/{id}/answer")
+    public ResponseEntity<AnswerResponse> getAnswer(@PathVariable String id){
+        AnswerResponse answerResponse = answerCacheService.getAnswer(id);
+        if(answerResponse == null) answerResponse = questionService.getAnswerByQuestionId(id);
+        return ResponseEntity.ok(answerResponse);
+    }
+    @GetMapping("/questions/{seesionId}/answer")
+    public ResponseEntity<TempSessionResponse> getAnswers(@PathVariable String seesionId){
+        TempSessionResponse tempSessionResponse = tempService.getSession(seesionId);
+        if(tempSessionResponse == null) throw new ResourceNotFoundException("Session not Exists id:"+seesionId);
+        return ResponseEntity.ok(tempSessionResponse);
+    }
 }

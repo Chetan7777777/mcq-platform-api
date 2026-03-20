@@ -33,13 +33,13 @@ public class QuestionServiceTest {
     @InjectMocks
     private QuestionService questionService;
 
-    @Test
-    void saveQuestionTest(){
-        Question question = createQuestion("Algebra" , "Maths");
-        when(questionRepo.save(question)).thenReturn(question);
-        Question q = questionService.saveQuestion(question);
-        assertThat(q).isNotNull();
-    }
+    // @Test
+    // void saveQuestionTest(){
+    //     Question question = createQuestion("Algebra" , "Maths");
+    //     when(questionRepo.save(question)).thenReturn(question);
+    //     Question q = questionService.saveQuestion(question);
+    //     assertThat(q).isNotNull();
+    // }
     @Test
     void getQuestionsTest(){
         Question question1 = createQuestion("Algebra" , "Maths");

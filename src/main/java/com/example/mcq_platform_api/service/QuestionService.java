@@ -3,6 +3,7 @@ package com.example.mcq_platform_api.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +15,11 @@ import org.springframework.stereotype.Service;
 import com.example.mcq_platform_api.dto.AnswerResponse;
 import com.example.mcq_platform_api.dto.OptionResponse;
 import com.example.mcq_platform_api.dto.QuestionListResponse;
+import com.example.mcq_platform_api.dto.QuestionRequest;
 import com.example.mcq_platform_api.dto.QuestionResponse;
 import com.example.mcq_platform_api.entities.Option;
 import com.example.mcq_platform_api.entities.Question;
+import com.example.mcq_platform_api.exception.BadRequestException;
 import com.example.mcq_platform_api.exception.ResourceNotFoundException;
 import com.example.mcq_platform_api.repository.QuestionRepo;
 
@@ -26,19 +29,54 @@ public class QuestionService {
 
     private static final Logger logger = LoggerFactory.getLogger(QuestionService.class);
     private final TempService tempService;
-    
+    private final AnswerCacheService answerCacheService;
     private final QuestionRepo questionRepo;
 
-    public QuestionService(TempService tempService , QuestionRepo questionRepo){
+    public QuestionService(TempService tempService , QuestionRepo questionRepo , AnswerCacheService answerCacheService){
         this.questionRepo = questionRepo;
         this.tempService = tempService;
+        this.answerCacheService = answerCacheService;
     }
 
-    public Question saveQuestion(Question question) {
-        if(question == null){
-            throw new IllegalArgumentException("Question cannot be null");
+    public int saveAllQuestion(List<QuestionRequest> questionRequests) {
+        List<Question> questions = new ArrayList<>();
+        for (QuestionRequest qr : questionRequests) {
+            if (qr.getQuestionText() == null)
+                throw new BadRequestException("questionText Cannot be null");
+
+            if (qr.getOptions() == null || qr.getOptions().size() < 2)
+                throw new BadRequestException("At least add 2 or more options");
+
+            // 1. Create Question 
+            Question question = Question.builder()
+                .id(UUID.randomUUID().toString())
+                .subject(qr.getSubject())
+                .topic(qr.getTopic())
+                .questionText(qr.getQuestionText())
+                .build();
+
+            // 2. Map OptionRequest → Option
+            List<Option> options = qr.getOptions().stream().map(or -> {
+
+            if (or.getOptionText() == null)
+                throw new BadRequestException("Option text cannot be null");
+
+            return Option.builder()
+                    .id(UUID.randomUUID().toString())
+                    .optionText(or.getOptionText())
+                    .isCorrect(or.isCorrect())
+                    .question(question)
+                    .build();
+
+            }).toList();
+
+            // 3. Set options in question
+            question.setOptions(options);
+
+            // 4. Add to list
+            questions.add(question);
         }
-        return questionRepo.save(question);
+        return questionRepo.saveAll(questions).size();
     }
     public QuestionResponse getQuestionById(String questionId){
         Question q = questionRepo.findById(questionId).orElseThrow(()->new ResourceNotFoundException("Question not found with id:"+questionId));
@@ -50,10 +88,26 @@ public class QuestionService {
         List<OptionResponse> optionResponses = new ArrayList<>();
         char c = 'a';
         for(Option option : optionList){
-            optionResponses.add(new OptionResponse(c++,option.getOptionText()));      
+            optionResponses.add(new OptionResponse(c,option.getOptionText())); 
+            if(option.isCorrect()){
+                answerCacheService.cacheAnswer(new AnswerResponse(questionId , c , option.getOptionText()));
+            }     
+            c++;
         }
         qr.setOptions(optionResponses);
         return qr;
+    }
+    public AnswerResponse getAnswerByQuestionId(String id){
+        Question q = questionRepo.findById(id).orElseThrow(()->new ResourceNotFoundException("Question not found with id:"+id));
+        char c = 'a';
+        AnswerResponse answerResponse = null;
+        for(Option option : q.getOptions()){
+            if(option.isCorrect()) {
+                answerResponse = new AnswerResponse(id , c++ , option.getOptionText());
+                answerCacheService.cacheAnswer(answerResponse);
+            }
+        }
+        return answerResponse;
     }
     public QuestionListResponse getQuestions(String subject, String topic, int limit) {
 
