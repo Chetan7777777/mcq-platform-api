@@ -12,5 +12,4 @@ import lombok.Setter;
 public class OptionResponse {
     private char label;
     private String optionText;
-
 }

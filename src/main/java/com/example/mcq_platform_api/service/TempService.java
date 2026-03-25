@@ -7,19 +7,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.stereotype.Service;
 
+import com.example.mcq_platform_api.dto.AnswerListResponse;
 import com.example.mcq_platform_api.dto.AnswerResponse;
-import com.example.mcq_platform_api.dto.TempSessionResponse;
 
 @Service
 public class TempService {
-    private final Map<String,TempSessionResponse> sessionStore = new ConcurrentHashMap<>();
+    private final Map<String,AnswerListResponse> sessionStore = new ConcurrentHashMap<>();
     public String createSession(List<AnswerResponse> answers){
-        String sessionId = UUID.randomUUID().toString().substring(0,8);
-        TempSessionResponse tempSessionDTO = new TempSessionResponse(answers);
+        String sessionId = UUID.randomUUID().toString();
+        AnswerListResponse tempSessionDTO = new AnswerListResponse(answers);
         sessionStore.put(sessionId, tempSessionDTO);
         return sessionId;
     }
-    public TempSessionResponse getSession(String sessionId){
+    public AnswerListResponse getSession(String sessionId){
         return sessionStore.get(sessionId);
     }
     public void removeSession(String sessionId){

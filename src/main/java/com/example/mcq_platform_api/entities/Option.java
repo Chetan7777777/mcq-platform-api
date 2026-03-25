@@ -22,7 +22,7 @@ public class Option {
     @Id
     private String id;
     private String optionText;
-    private boolean isCorrect;
+    private boolean correct;
 
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)
     @JoinColumn(name = "question_id", nullable = false)

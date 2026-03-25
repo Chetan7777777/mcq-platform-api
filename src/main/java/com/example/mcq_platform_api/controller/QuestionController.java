@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.mcq_platform_api.appconstants.Constant;
+import com.example.mcq_platform_api.dto.AnswerListResponse;
 import com.example.mcq_platform_api.dto.AnswerResponse;
 import com.example.mcq_platform_api.dto.QuestionListResponse;
 import com.example.mcq_platform_api.dto.QuestionResponse;
-import com.example.mcq_platform_api.dto.TempSessionResponse;
 import com.example.mcq_platform_api.exception.ResourceNotFoundException;
 import com.example.mcq_platform_api.service.AnswerCacheService;
 import com.example.mcq_platform_api.service.QuestionService;
@@ -53,8 +53,8 @@ public class QuestionController {
         return ResponseEntity.ok(answerResponse);
     }
     @GetMapping("/questions/{seesionId}/answer")
-    public ResponseEntity<TempSessionResponse> getAnswers(@PathVariable String seesionId){
-        TempSessionResponse tempSessionResponse = tempService.getSession(seesionId);
+    public ResponseEntity<AnswerListResponse> getAnswers(@PathVariable String seesionId){
+        AnswerListResponse tempSessionResponse = tempService.getSession(seesionId);
         if(tempSessionResponse == null) throw new ResourceNotFoundException("Session not Exists id:"+seesionId);
         return ResponseEntity.ok(tempSessionResponse);
     }

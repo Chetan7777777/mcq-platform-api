@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class TempSessionResponse {
+public class AnswerListResponse {
     private List<AnswerResponse> answers;
 }

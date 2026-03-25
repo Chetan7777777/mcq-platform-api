@@ -3,31 +3,34 @@ package com.example.mcq_platform_api.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.mcq_platform_api.dto.AnswerResponse;
+import com.example.mcq_platform_api.dto.OptionRequest;
 import com.example.mcq_platform_api.dto.OptionResponse;
 import com.example.mcq_platform_api.dto.QuestionListResponse;
 import com.example.mcq_platform_api.dto.QuestionRequest;
 import com.example.mcq_platform_api.dto.QuestionResponse;
+import com.example.mcq_platform_api.dto.QuestionUpdateRequest;
 import com.example.mcq_platform_api.entities.Option;
 import com.example.mcq_platform_api.entities.Question;
 import com.example.mcq_platform_api.exception.BadRequestException;
 import com.example.mcq_platform_api.exception.ResourceNotFoundException;
 import com.example.mcq_platform_api.repository.QuestionRepo;
 
+import jakarta.transaction.Transactional;
+
 
 @Service
 public class QuestionService {
 
-    private static final Logger logger = LoggerFactory.getLogger(QuestionService.class);
     private final TempService tempService;
     private final AnswerCacheService answerCacheService;
     private final QuestionRepo questionRepo;
@@ -50,8 +53,9 @@ public class QuestionService {
             // 1. Create Question 
             Question question = Question.builder()
                 .id(UUID.randomUUID().toString())
-                .subject(qr.getSubject())
+                .subject(qr.getSubject())   
                 .topic(qr.getTopic())
+                .explanation(qr.getExplanation())
                 .questionText(qr.getQuestionText())
                 .build();
 
@@ -64,7 +68,7 @@ public class QuestionService {
             return Option.builder()
                     .id(UUID.randomUUID().toString())
                     .optionText(or.getOptionText())
-                    .isCorrect(or.isCorrect())
+                    .correct(or.isCorrect())
                     .question(question)
                     .build();
 
@@ -77,6 +81,52 @@ public class QuestionService {
             questions.add(question);
         }
         return questionRepo.saveAll(questions).size();
+    }
+    @Transactional
+    public void updateQuestion(List<QuestionUpdateRequest> requestList) {
+
+        List<String> ids = requestList.stream()
+                .map(QuestionUpdateRequest::getQuestionId)
+                .toList();
+
+        Map<String, Question> questionMap = questionRepo.findAllById(ids)
+            .stream()
+            .collect(Collectors.toMap(Question::getId, q -> q));
+
+        for (QuestionUpdateRequest req : requestList) {
+            Question q = questionMap.get(req.getQuestionId());
+            if (q == null) {
+                throw new ResourceNotFoundException(
+                    "Question not found with id: " + req.getQuestionId());
+            }
+
+            // update fields
+            q.setQuestionText(req.getQuestionText());
+            q.setExplanation(req.getExplanation());
+            q.setSubject(req.getSubject());
+            q.setTopic(req.getTopic());
+
+            // replace options
+            q.getOptions().clear();
+
+            List<Option> newOptions = req.getOptions().stream().map(or -> {
+                Option option = new Option();
+                option.setId(UUID.randomUUID().toString());
+                option.setOptionText(or.getOptionText());
+                option.setCorrect(or.isCorrect());
+                option.setQuestion(q);
+                return option;
+            }).toList();
+
+            q.getOptions().addAll(newOptions);
+        }
+
+        // single save call (better)
+        questionRepo.saveAll(questionMap.values());
+    }
+    public void deleteQuestionByQuestionId(String questionId){
+        Question q = questionRepo.findById(questionId).orElseThrow(()->new ResourceNotFoundException("Question not found with id:"+questionId));
+        questionRepo.delete(q);
     }
     public QuestionResponse getQuestionById(String questionId){
         Question q = questionRepo.findById(questionId).orElseThrow(()->new ResourceNotFoundException("Question not found with id:"+questionId));
@@ -142,7 +192,6 @@ public class QuestionService {
             List <OptionResponse> optionResponses = new ArrayList<>();
             char c = 'a';
             for(Option option : question.getOptions()){
-                logger.info("options : "+option.getId());
                 OptionResponse optionResponse = new OptionResponse();
                 optionResponse.setLabel(c);
                 optionResponse.setOptionText(option.getOptionText());
@@ -161,7 +210,6 @@ public class QuestionService {
         listResponse.setTopic(topic);
         listResponse.setTotal(questions.size());
         listResponse.setSessionId(tempService.createSession(answers));
-        logger.info("ANswers size -: "+answers.size());
 
         if(subject != null && !questions.isEmpty() && topic != null){
             listResponse.setSubject(subject);

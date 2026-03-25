@@ -87,7 +87,7 @@ public class QuestionRepoTest {
         question.setSubject(subject);
         question.setTopic(topic);
         question.setQuestionText("Sample question text");
-        question.setExplaination("Explaination");
+        question.setExplanation("Explaination");
         question.setOptions(List.of(new Option(UUID.randomUUID().toString(), "Option 1", true, question),
                                   new Option(UUID.randomUUID().toString(), "Option 2", false, question)
                                   ));

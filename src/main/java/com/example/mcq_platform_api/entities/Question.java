@@ -23,7 +23,7 @@ public class Question {
     private String questionText;
     private String subject; 
     private String topic;
-    private String explaination;
+    private String explanation;
 
     @OneToMany(mappedBy = "question", cascade = jakarta.persistence.CascadeType.ALL)
     private List<Option> options; 
