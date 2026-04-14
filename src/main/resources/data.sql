@@ -1,7 +1,7 @@
 INSERT INTO question (id, question_text, subject, topic , explanation) VALUES
-(1, 'What is 2 + 2?', 'Maths', 'Arithmetic','+ operation will add numbers'),
-(2, 'What is 5 * 6?', 'Maths', 'Arithmetic','+ operation will add number'),
-(3, 'Capital of France?', 'Geography', 'Europe','it is a fact');
+(1, 'What is 2 + 2?', 'math', 'arithmetic','+ operation will add numbers'),
+(2, 'What is 5 * 6?', 'math', 'arithmetic','+ operation will add number'),
+(3, 'Capital of France?', 'geography', 'europe','it is a fact');
 
 INSERT INTO question_options (id, option_text, correct, question_id) VALUES
 (1, '3', false, 1),

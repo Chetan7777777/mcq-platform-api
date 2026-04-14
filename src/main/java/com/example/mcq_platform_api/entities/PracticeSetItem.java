@@ -5,12 +5,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 
 @Entity
-public class QuestionSessionQuestion {
+public class PracticeSetItem {
     @Id
     private String id;
     
     @ManyToOne
-    private QuestionSession questionSession;
+    private PracticeSet practiceSet;
     
     @ManyToOne
     private Question question;

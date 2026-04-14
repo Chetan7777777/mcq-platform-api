@@ -13,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.mcq_platform_api.dto.AnswerResponse;
-import com.example.mcq_platform_api.dto.OptionRequest;
 import com.example.mcq_platform_api.dto.OptionResponse;
 import com.example.mcq_platform_api.dto.QuestionListResponse;
 import com.example.mcq_platform_api.dto.QuestionRequest;
@@ -31,14 +30,16 @@ import jakarta.transaction.Transactional;
 @Service
 public class QuestionService {
 
-    private final TempService tempService;
+    private final AnswerListCacheService answerListCacheService;
     private final AnswerCacheService answerCacheService;
     private final QuestionRepo questionRepo;
+    private final QuestionListCacheService questionListCacheService;
 
-    public QuestionService(TempService tempService , QuestionRepo questionRepo , AnswerCacheService answerCacheService){
+    public QuestionService(AnswerListCacheService answerListCacheService , QuestionRepo questionRepo , AnswerCacheService answerCacheService , QuestionListCacheService questionListCacheService) {
         this.questionRepo = questionRepo;
-        this.tempService = tempService;
+        this.answerListCacheService = answerListCacheService;
         this.answerCacheService = answerCacheService;
+        this.questionListCacheService = questionListCacheService;
     }
 
     public int saveAllQuestion(List<QuestionRequest> questionRequests) {
@@ -160,7 +161,7 @@ public class QuestionService {
         return answerResponse;
     }
     public QuestionListResponse getQuestions(String subject, String topic, int limit) {
-
+        System.out.println("\n\n" + subject + " " + topic + " " + limit + "\n\n");
         Pageable pageable = PageRequest.of(0, limit);
         Page<Question> questionPage;
 
@@ -168,6 +169,7 @@ public class QuestionService {
             questionPage = questionRepo.findBySubjectAndTopic(subject, topic, pageable);
         } 
         else if (subject != null) {
+            System.out.println("find by subject called");
             questionPage = questionRepo.findBySubject(subject, pageable);
         } 
         else if (topic != null) {
@@ -176,9 +178,10 @@ public class QuestionService {
         else {
             questionPage = questionRepo.findAll(pageable);
         }
-        if(questionPage == null) throw new ResourceNotFoundException("Question not found");
-
-        return mapToQuestionListResponse(questionPage.getContent(), subject, topic , limit);
+        if(questionPage.getTotalElements() == 0) throw new ResourceNotFoundException("Question not found");
+        QuestionListResponse questionListResponse = mapToQuestionListResponse(questionPage.getContent(), subject, topic , limit);
+        questionListCacheService.cacheQuestion(questionListResponse);
+        return questionListResponse;
     }
     private QuestionListResponse mapToQuestionListResponse(List<Question> questions , String subject , String topic , int limit) {
         List<QuestionResponse> response = new ArrayList<>();
@@ -209,7 +212,7 @@ public class QuestionService {
         listResponse.setSubject(subject);
         listResponse.setTopic(topic);
         listResponse.setTotal(questions.size());
-        listResponse.setSessionId(tempService.createSession(answers));
+        listResponse.setSessionId(answerListCacheService.createSession(answers));
 
         if(subject != null && !questions.isEmpty() && topic != null){
             listResponse.setSubject(subject);

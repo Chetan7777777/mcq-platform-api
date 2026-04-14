@@ -15,7 +15,7 @@ import com.example.mcq_platform_api.dto.QuestionResponse;
 import com.example.mcq_platform_api.exception.ResourceNotFoundException;
 import com.example.mcq_platform_api.service.AnswerCacheService;
 import com.example.mcq_platform_api.service.QuestionService;
-import com.example.mcq_platform_api.service.TempService;
+import com.example.mcq_platform_api.service.AnswerListCacheService;
 
 
 @Controller
@@ -25,7 +25,7 @@ public class QuestionController {
     @Autowired
     private AnswerCacheService answerCacheService;
     @Autowired 
-    private TempService tempService;
+    private AnswerListCacheService tempService;
    
     @GetMapping("/questions")
     public ResponseEntity<QuestionListResponse> getQuestions(@RequestParam(required = false) String subject ,

@@ -15,15 +15,15 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class QuestionSession {
+public class PracticeSet {
     @Id
     private String id;
     private String userId;
     private String topic;
     private String subject;
     private String dateAndTime;   
-    
-    @OneToMany(mappedBy = "questionSession", cascade = jakarta.persistence.CascadeType.ALL)
-    private List<QuestionSessionQuestion> questionSessionQuestions;
 
-}
+    @OneToMany(mappedBy = "practiceSet", cascade = jakarta.persistence.CascadeType.ALL)
+    private List<PracticeSetItem> practiceSetItems;  
+} 
+

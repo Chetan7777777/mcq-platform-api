@@ -20,15 +20,18 @@ import com.example.mcq_platform_api.repository.QuestionRepo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class QuestionServiceTest {
 
     @Mock
-    private TempService tempService;
+    private AnswerListCacheService tempService;
     @Mock
     private QuestionRepo questionRepo;
+    @Mock
+    private QuestionListCacheService questionListCacheService;
 
     @InjectMocks
     private QuestionService questionService;
@@ -48,6 +51,7 @@ public class QuestionServiceTest {
         List<Question> questions = List.of(question1, question2);
         Page<Question> questionPage = new PageImpl<>(questions);
         when(questionRepo.findBySubject(eq("Maths"), any(Pageable.class))).thenReturn(questionPage);
+        doNothing().when(questionListCacheService).cacheQuestion(any());
         QuestionListResponse response = questionService.getQuestions("Maths", null, 10);
         assertThat(response).isNotNull();
         assertThat(response.getQuestions()).hasSize(2);

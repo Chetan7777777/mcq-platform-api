@@ -11,7 +11,7 @@ import com.example.mcq_platform_api.dto.AnswerListResponse;
 import com.example.mcq_platform_api.dto.AnswerResponse;
 
 @Service
-public class TempService {
+public class AnswerListCacheService {
     private final Map<String,AnswerListResponse> sessionStore = new ConcurrentHashMap<>();
     public String createSession(List<AnswerResponse> answers){
         String sessionId = UUID.randomUUID().toString();

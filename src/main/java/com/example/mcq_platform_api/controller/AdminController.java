@@ -2,7 +2,6 @@ package com.example.mcq_platform_api.controller;
 
 import java.util.List;
 
-import org.aspectj.bridge.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
